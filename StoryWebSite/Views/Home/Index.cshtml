@@ -1,0 +1,32 @@
+﻿@model IEnumerable<StoryWebSite.Models.Story>
+
+@{
+    ViewData["Title"] = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@foreach (var item in Model)
+{
+    @if (User.IsInRole("Admin") || item.isPublic == "Yes" || User.Identity.Name == item.Publisher)
+    {
+        <div id="storybox">
+            <table class="table">
+                <tr>
+                    <th>Story Title: </th>
+                    <td><a asp-action="StoryDetail" asp-route-id="@item.StoryId">@Html.DisplayFor(modelItem => item.Title)</a></td>
+                </tr>
+                <tr>
+                    <th>Publisher: </th>
+                    <td>@Html.DisplayFor(modelItem => item.Publisher)</td>
+                </tr>
+                <tr>
+                    <th>Create Time: </th>
+                    <td>@Html.DisplayFor(modelItem => item.CreateTime)</td>
+                </tr>
+            </table>
+        </div>
+
+    }
+}
+

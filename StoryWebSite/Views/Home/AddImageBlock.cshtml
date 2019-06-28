@@ -1,0 +1,53 @@
+﻿@model StoryWebSite.ViewModels.CreatePost
+
+@{
+    ViewData["Title"] = "AddImageBlock";
+}
+
+<h1>Add an Image Block</h1>
+<hr />
+
+<form asp-action="AddImageBlock" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly"></div>
+    <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Index in story</label>
+        <div class="col-sm-2">
+            <input asp-for="ImageBlockIndex" type="text" class="form-control" />
+        </div>
+        <span asp-validation-for="ImageBlockIndex"></span>
+    </div>
+    <div class="form-group row">
+        <label asp-for="ImageCaption" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-6">
+            <input asp-for="ImageCaption" type="text" class="form-control" />
+        </div>
+        <span asp-validation-for="ImageCaption"></span>
+    </div>
+    <div class="form-group row">
+        <label asp-for="ImageDescription" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-6">
+            <textarea class="form-control" asp-for="ImageDescription" type="text" rows="5"></textarea>
+        </div>
+        <span asp-validation-for="ImageDescription"></span>
+    </div>
+    <div class="form-group row">
+        <label asp-for="MyImage" lass="col-sm-2 col-form-label"></label>
+        <span style="width:130px"></span>
+        <span><input asp-for="MyImage" type="file"class="form-control-file" /></span>
+        <span asp-validation-for="MyImage"></span>
+    </div>
+    <div>@ViewBag.description</div>
+    <div class="form-group row">
+        <input type="submit" class="btn btn-primary mb-2" value="Add" />
+    </div>
+</form>
+<div>
+    <a asp-action="UserDetail">Back to Your Page</a>
+</div>
+
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,58 @@
+﻿@model IEnumerable<StoryWebSite.Models.Story>
+
+@{
+    ViewData["Title"] = "User Manage Console";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>User Manage Console</h1>
+
+<table class="table" id="datatable2">
+    <thead class="thead-light">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Publisher)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreateTime)
+            </th>
+            <th colspan="3">Operations</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Publisher)
+                </td>
+                <td style="max-width: 300px">
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreateTime)
+                </td>
+                <td>
+                    <a asp-action="StoryDetail" asp-route-id="@item.StoryId">Story Detail</a>
+                </td>
+                <td>
+                    <a asp-action="EditStory" asp-route-id="@item.StoryId">Edit Story</a>
+                </td>
+                <td>
+                    <a asp-action="DeleteStory" asp-route-id="@item.StoryId">Delete Story</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#datatable2').DataTable();
+        });
+    </script>
+}

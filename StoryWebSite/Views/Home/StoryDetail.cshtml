@@ -1,0 +1,286 @@
+﻿@model StoryWebSite.Models.Story
+
+@{
+    ViewData["Title"] = "StoryDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<table>
+    <tr>
+        <th style="font-size: 40px">@Html.DisplayNameFor(model => model.Title): </th>
+        <td style="font-size: 40px">@Html.DisplayFor(model => model.Title)</td>
+    </tr>
+</table>
+<div style="height:20px"></div>
+
+<form>
+    <input type="button" id="firstButton" class="controlbutton" value="First" onclick="goToEdge(false)" />
+    <input type="button" class="controlbutton" value="Back" onclick="toggleSlide(false)" />
+    <input id="pauseButton" class="controlbutton" onclick="toggleInterval()" type="button" value="Pause" />
+    <input type="button" class="controlbutton" value="Forward" onclick="toggleSlide(true)" />
+    <input type="button" id="lastButton" class="controlbutton" value="Last" onclick="goToEdge(true)" />
+    <input type="button" id="bigbutton" class="controlbutton" onclick="biggerImage()" value="Zoom In" style="margin-left: 60px" />
+    <input type="button" id="smallbutton" class="controlbutton" onclick="smallerImage()" value="Zoom Out" />
+</form>
+<form>
+    <label>Switching Time(s): </label>
+    <input type="number" id="switchtime" placeholder="2" min="1" required onkeypress="return isNumberKey(event,this)">
+    <p>(Note: The number you input should be greater than 1 and limit to 2 decimals.)</p>
+</form>
+
+<div id="slidebox">
+    @foreach (var item in Model.ImageBlocks)
+    {
+        <div class="slide">
+            <div id="Caption">@Html.DisplayFor(modelItem => item.ImageCaption)</div>
+            <div>
+                <img src="~/FileStorage/@item.ImageName" class="images" alt="imgage" />
+            </div>
+            <div>
+                <textarea readonly type="text" id="displaytext">
+                @Html.DisplayFor(modelItem => item.ImageDescription)
+                </textarea>
+            </div>
+        </div>
+    }
+</div>
+
+<p>
+    Block
+    <span id="slideNumber">
+        <script type="text/javascript">
+            var elements = document.getElementsByClassName("slide");
+            var vis = getVisible(elements) + 1;
+            document.write(vis);
+        </script>
+    </span>
+    of
+    <script type="text/javascript">
+        document.write(document.getElementsByClassName("slide").length);
+    </script>
+</p>
+
+<div>
+    <a asp-action="AddComment" asp-route-id="@Model.StoryId">Write Your Comment</a>
+</div>
+
+
+<div style="height:20px"></div>
+<h3>Users' comments: </h3>
+@foreach (var item in Model.Comments)
+{
+    <table>
+        <thead>
+            <tr>
+                <th>@Html.DisplayFor(modelItem => item.Reviewer) writes on @Html.DisplayFor(modelItem => item.ReviewTime):</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                        @Html.DisplayFor(modelItem => item.Content)
+                </td>
+            </tr>
+            @if (User.IsInRole("Admin") || Context.User.Identity.Name == item.Reviewer)
+            {
+                <tr>
+                    <td>
+                        <a asp-action="EditComment" asp-route-id="@item.CommentId">Edit</a> |
+                        <a asp-action="DeleteComment" asp-route-id="@item.CommentId">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tbody></tbody>
+    </table>
+    <hr />
+}
+
+
+<script type="text/javascript">
+    //textarear auto height
+    var autoExpand = function (field) {
+        // Reset field height
+        field.style.height = 'inherit';
+        // Get the computed styles for the element
+        var computed = window.getComputedStyle(field);
+
+        // Calculate the height
+        var height = parseInt(computed.getPropertyValue('border-top-width'), 10)
+            + parseInt(computed.getPropertyValue('padding-top'), 10)
+            + field.scrollHeight
+            + parseInt(computed.getPropertyValue('padding-bottom'), 10)
+            + parseInt(computed.getPropertyValue('border-bottom-width'), 10);
+
+        field.style.height = height + 'px';
+    };
+
+    document.addEventListener('input', function (event) {
+        if (event.target.tagName.toLowerCase() !== 'textarea') return;
+        autoExpand(event.target);
+    });
+
+
+
+    //slideshow
+    var slides = document.getElementsByClassName("slide");
+    slides[0].setAttribute('style', 'display: block;');
+
+
+
+
+    //change slide size cannot change div size, just image
+    function biggerImage() {
+        var picts = document.getElementsByClassName("images");
+        for (var i = 0; i < picts.length; i++) {
+            if (picts[i].width >= 780) {
+                alert("It has reach the maximum size, cannot be bigger any more.");
+            }
+            else {
+                picts[i].width = picts[i].width * 1.2;
+                picts[i].height = picts[i].height * 1.2;
+            }
+        }
+    }
+    function smallerImage() {
+        var picts = document.getElementsByClassName("images");
+        for (var i = 0; i < picts.length; i++) {
+            picts[i].width = picts[i].width / 1.2;
+            picts[i].height = picts[i].height / 1.2;
+        }
+    }
+
+    //limit the value in input box only can be number and with two decimal
+    function isNumberKey(evt, element) {
+        var charCode = (evt.which) ? evt.which : event.keyCode
+        if (charCode > 31 && (charCode < 48 || charCode > 57) && !(charCode == 46 || charCode == 8)) {
+            return false;
+        }
+        else {
+            var len = $(element).val().length;
+            var index = $(element).val().indexOf('.');
+            if (index > 0 && charCode == 46) {
+                return false;
+            }
+            if (index > 0) {
+                var CharAfterdot = (len + 1) - index;
+                if (CharAfterdot > 3) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    //funtion for button pause
+    var interval = 2000;
+    var switching = setInterval("toggleSlide(true)", interval);
+    window.paused = false;
+
+    function toggleInterval() {
+        var button = document.getElementById("pauseButton");
+        if (!window.paused) {
+            clearInterval(switching);
+            button.value = "Resume";
+        } else {
+            if (document.getElementById("switchtime").value) {
+                interval = parseInt(document.getElementById("switchtime").value) * 1000;
+            }
+            else {
+                interval = 2000;
+            }
+            switching = setInterval("toggleSlide(true)", interval);
+            button.value = "Pause";
+        }
+        window.paused = !(window.paused);
+    }
+
+    //function for button forward and back
+    // direction = boolean value: true or false. If true, go to NEXT slide; otherwise go to PREV slide
+    function toggleSlide(direction) {
+        var elements = document.getElementsByClassName("slide"); // gets all the "slides" in our slideshow
+
+        // Find the LI that's currently displayed
+        var visibleID = getVisible(elements);
+
+
+        elements[visibleID].style.display = "none"; // hide the currently visible LI
+        if (!direction) {
+            var makeVisible = prev(visibleID, elements.length); // get the previous slide
+        } else {
+            var makeVisible = next(visibleID, elements.length); // get the next slide
+        }
+        elements[makeVisible].style.display = "block"; // show the previous or next slide
+        var sn = document.getElementById("slideNumber");
+        sn.innerHTML = (makeVisible + 1);
+    }
+    //get the current slide id
+    function getVisible(elements) {
+        var visibleID = -1;
+        for (var i = 0; i < elements.length; i++) {
+            if (elements[i].style.display == "block") {
+                visibleID = i;
+            }
+        }
+        return visibleID;
+    }
+
+    function prev(num, arrayLength) {
+        if (num == 0) return arrayLength - 1;
+        else return num - 1;
+    }
+
+    function next(num, arrayLength) {
+        if (num == arrayLength - 1) return 0;
+        else return num + 1;
+    }
+
+    //function for button first and last
+    function goToEdge(where) {
+        var elements = document.getElementsByClassName("slide");
+        var visibleID = getVisible(elements);
+        var firstButton = document.getElementById("firstButton");
+        var lastButton = document.getElementById("lastButton");
+
+
+        var sn = document.getElementById("slideNumber");
+        elements[visibleID].style.display = "none";
+        if (!where) {
+            elements[0].style.display = "block";
+            sn.innerHTML = 1;
+        } else {
+            elements[elements.length - 1].style.display = "block";
+            sn.innerHTML = elements.length;
+        }
+    }
+
+
+    //limit the value in input box in the range[0, slides.length]
+    function slideLimitation() {
+        var slides = document.getElementsByClassName("slide");
+        var length = slides.length;
+        var visibleID = getVisible(slides);
+        var sn = document.getElementById("slideNumber");
+        var input = document.getElementById("slideLimitation").value;
+        console.log('input: ', input);
+
+        var start;
+        if (input < 0 || input > length - 1) {
+            start = 0;
+            slides[visibleID].style.display = "none";
+            slides[start].style.display = "block";
+            sn.innerHTML = 1;
+        }
+        else {
+            start = input;
+            slides[visibleID].style.display = "none";
+            slides[start].style.display = "block";
+            sn.innerHTML = start;
+        }
+        console.log('visibleID: ', visibleID);
+        console.log('sn.innerHTML: ', sn.innerHTML);
+        console.log('start: ', start);
+
+    }
+</script>

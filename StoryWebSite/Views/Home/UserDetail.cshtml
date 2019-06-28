@@ -1,0 +1,54 @@
+﻿@model IEnumerable<StoryWebSite.Models.Story>
+
+@{
+    ViewData["Title"] = "User Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<h1>User Detail</h1>
+<hr />
+
+<div>
+    <a asp-action="CreateStory" style="float: right; font-weight: 800; font-size: 18px;">Create a new story</a>
+</div>
+
+
+
+<h3>Story List:</h3>
+<table class="table" id="datatable">
+    <thead class="thead-light">
+        <tr>
+            <th>Title</th>
+            <th>Is public</th>
+            <th>Creat Time</th>
+            <th>Operations</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                <td>@Html.DisplayFor(modelItem => item.isPublic)</td>
+                <td>@Html.DisplayFor(modelItem => item.CreateTime)</td>
+                <td>
+                    <a asp-action="StoryDetail" asp-route-id="@item.StoryId"> Story Detail </a> |
+                    <a asp-action="EditStory" asp-route-id="@item.StoryId"> Edit Story </a> |
+                    <span id="delete-st">
+                        <a asp-action="DeleteStory" asp-route-id="@item.StoryId"> Delete Story </a>
+                        <span class="tooltiptext">You could delete the story only when it is empty. Or you could contact admin.</span>
+                    </span>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#datatable').DataTable();
+        });
+    </script>
+}

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <UserSecretsId>aspnet-StoryWebSite-E37E7036-8C83-42B6-89E3-9CE361F3B24D</UserSecretsId>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <ApplicationIcon />
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Bootbox.JS" Version="5.0.1" />
+    <PackageReference Include="Elect.Web.DataTable" Version="2.7.0" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="FileStorage\" />
+    <Folder Include="wwwroot\FileStorage\" />
+  </ItemGroup>
+
+</Project>

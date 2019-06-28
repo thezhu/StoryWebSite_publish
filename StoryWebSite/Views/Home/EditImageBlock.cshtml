@@ -1,0 +1,48 @@
+﻿@model StoryWebSite.Models.ImageBlock
+
+@{
+    ViewData["Title"] = "EditImageBlock";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Edit an Image Block</h1>
+<hr />
+
+<div>
+    <a asp-action="EditStory" asp-route-id="@Model.StoryId">Back to Content List</a>
+</div>
+
+<div>
+    <form asp-action="EditImageBlock">
+        <!--will display only validation messages that apply to the model level. -->
+        <div asp-validation-summary="ModelOnly"></div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Index in story</label>
+            <div class="col-sm-2">
+                <input asp-for="ImageBlockIndex" type="text" class="form-control" />
+            </div>
+            <span asp-validation-for="ImageBlockIndex"></span>
+        </div>
+        <div class="form-group row">
+            <label asp-for="ImageCaption" class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-6">
+                <input asp-for="ImageCaption" type="text" class="form-control" />
+            </div>
+            <span asp-validation-for="ImageCaption"></span>
+        </div>
+        <div class="form-group row">
+            <label asp-for="ImageDescription" class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-6">
+                <textarea class="form-control" asp-for="ImageDescription" type="text" rows="5"></textarea>
+            </div>
+            <span asp-validation-for="ImageDescription"></span>
+        </div>
+        <div class="form-group row">
+            <input type="submit" class="btn btn-primary mb-2" value="Save" />
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
